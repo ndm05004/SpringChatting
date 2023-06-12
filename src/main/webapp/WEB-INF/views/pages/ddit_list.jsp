@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
  <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+ <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -21,7 +22,72 @@
   <!-- Material Icons -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <!-- CSS Files -->
-  <link id="pagestyle" href="../assets/css/material-dashboard.css?v=3.0.4" rel="stylesheet" />
+ <link id="pagestyle" href="../assets/css/material-dashboard.css?v=3.0.4" rel="stylesheet" />
+   <style>
+        .chatting-area {
+        	border : 1px solid black;
+            margin: auto;
+
+        }
+
+        #exit-area {
+            text-align: right;
+            margin-bottom: 10px;
+        }
+
+        .display-chatting {
+            width: 100%;
+            height: 300px;
+            border: 1px solid black;
+            overflow: auto;
+            /*스크롤 처럼*/
+            list-style: none;
+            padding: 10px 10px;
+            z-index: 1;
+            positon: absoulte;
+
+        }
+
+        .chat {
+            display: inline-block;
+            border-radius: 5px;
+            padding: 5px;
+            background-color: #eee;
+        }
+
+        .input-area {
+            width: 100%;
+            display: flex;
+        }
+
+        #inputChatting {
+            width: 80%;
+            resize: none;
+        }
+
+        #send {
+            width: 20%;
+        }
+
+        .myChat {
+            text-align: right;
+        }
+
+        .myChat>p {
+            background-color: gold;
+        }
+
+        .chatDate {
+            font-size: 10px;
+        }
+
+        .img {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: -100;
+        }
+    </style> 
 </head>
 
 <body class="g-sidenav-show  bg-gray-200">
@@ -138,55 +204,83 @@
 				
 			  </div>
 			</div>
-			
-            <div class="card-body px-0 pb-2" style="display: flex; justify-content: space-between;">
-              <div class="table-responsive p-0">
-                <table class="table align-items-center mb-0">
-                  <thead>
-                    <tr class="text-center">
-					  <th width="4%" class="text-dark font-weight-bolder">번호</th>
-                      <th width="14%" class="text-dark font-weight-bolder">채팅방 이름</th>
-                      <th width="14%" class="text-dark font-weight-bolder">방장</th>
-                    </tr>
-                  </thead>
-                  
-                  	<c:set value = "${pagingVO.dataList }" var="chatList"/>
-					<c:choose>
-						<c:when test="${empty chatList }">
-		                  <tbody>
-							<tr class="text-center">
-							  <td colspan="5" class="text-dark font-weight-bolder">조회하신 채팅방이 존재하지 않습니다.</td>
-							</tr>
-						   </tbody>
-					   </c:when>
-					   <c:otherwise>
-							<c:forEach items="${chatList }" var="chat">
-								<tr>
-									<td>${chat.chatRNo }</td>
-									<td>${chat.chatRTitle }</td>
-									<td>${chat.memId }</td>
-									<td><input type="button" value="입장" name="chatBtn" id="${chat.chatRNo }"></td>
-								</tr>								
-							</c:forEach>
-					   </c:otherwise>
-					</c:choose>
 
-                </table>
-	              <br><br>
-	              <button type="button" id="newBtn" class="btn btn-primary">방 만들기</button>
-              </div>
-              
-              	<div class="chatting-area" id="chatting-area">
-				<br><br>
-				<div id="exit-area">
-					<button class="btn btn-outline-danger" id="exit-btn">나가기</button>
-				</div>	
+						<div class="card-body px-0 pb-2"
+							style="display: flex; justify-content: space-between;">
+							<div class="table-responsive p-0">
+								<table class="table align-items-center mb-0">
+									<thead>
+										<tr class="text-center">
+											<th width="4%" class="text-dark font-weight-bolder">번호</th>
+											<th width="14%" class="text-dark font-weight-bolder">채팅방
+												이름</th>
+											<th width="14%" class="text-dark font-weight-bolder">방장</th>
+										</tr>
+									</thead>
 
-				</div>
-              
-            </div>
-            
-           <div class="card-footer clearfix" id="pagingArea">
+									<c:set value="${pagingVO.dataList }" var="chatList" />
+									<c:choose>
+										<c:when test="${empty chatList }">
+											<tbody>
+												<tr class="text-center">
+													<td colspan="5" class="text-dark font-weight-bolder">조회하신
+														채팅방이 존재하지 않습니다.</td>
+												</tr>
+											</tbody>
+										</c:when>
+										<c:otherwise>
+											<c:forEach items="${chatList }" var="chat">
+												<tr>
+													<td>${chat.chatRNo }</td>
+													<td>${chat.chatRTitle }</td>
+													<td>${chat.memId }</td>
+													<td><input type="button" value="입장" name="chatBtn"
+														id="${chat.chatRNo }"></td>
+												</tr>
+											</c:forEach>
+										</c:otherwise>
+									</c:choose>
+
+								</table>
+								<br>
+								<br>
+								<button type="button" id="newBtn" class="btn btn-primary">방
+									만들기</button>
+							</div>
+
+							<div class="chatting-area" id="chatting-area" justify-content: center; align-items: center; height: 100vh;">
+								<div id="exit-area">
+									<button id="exit-btn">나가기</button>
+								</div>
+								
+								<ul class="display-chatting">
+									<!-- <img src=""/> -->
+									<c:forEach items="${list }" var="msg">
+										<fmt:formatDate var="chatDate" value="${msg.createDate }"
+											pattern="yyyy년 MM월 dd일 HH:mm:ss" />
+										<c:if test="${msg.userNo == loginUser.userNo }">
+											<li class="myChat"><span class="chatDate">${chatDate }</span>
+												<p class="chat">${msg.message }</p></li>
+										</c:if>
+										<c:if test="${msg.userNo != loginUser.userNo }">
+											<li><b>${msg.userName }</b>
+												<p class="chat">${msg.message }</p> <span class="chatDate">${chatDate }</span>
+											</li>
+										</c:if>
+									</c:forEach>
+								</ul>
+
+								<div class="input-area">
+									<textarea id="inputChatting" rows="3"></textarea>
+									<button id="send">보내기</button>
+								</div>
+
+
+							</div>
+
+						</div>
+
+						<div class="card-footer clearfix" id="pagingArea">
 				${pagingVO.pagingHTML }
 									
 			</div>
@@ -280,7 +374,7 @@ $(function(){
 	});
 	
 	
-	$(document).on("click", "input[name='chatBtn']", function(){
+/* 	$(document).on("click", "input[name='chatBtn']", function(){
 		
 		var chatRNo = $(this).attr('id')
 
@@ -299,7 +393,7 @@ $(function(){
 		}
 		
 		
-	})
+	}) */
 
 })
 
