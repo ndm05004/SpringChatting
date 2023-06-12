@@ -19,11 +19,12 @@
 	 	<!-- 
 	 		<typeAlias type="클래스명(패키지 구조를 포함한)" alias="">	
 		-->
-		<typeAlias type="kr.or.api.vo.ChatContent" 	alias="chatContentVO"/> 
-		<typeAlias type="kr.or.api.vo.ChatNoRead" 	alias="chatNoReadVO"/> 
-		<typeAlias type="kr.or.api.vo.ChatRoom" 	alias="chatRoomVO"/> 
-		<typeAlias type="kr.or.api.vo.ChatUser" 	alias="chatUserVO"/> 
-		<typeAlias type="kr.or.api.vo.Member" 		alias="memberVO"/> 
+		<typeAlias type="kr.or.api.vo.ChatContentVO" 	alias="chatContentVO"/> 
+		<typeAlias type="kr.or.api.vo.ChatNoReadVO" 	alias="chatNoReadVO"/> 
+		<typeAlias type="kr.or.api.vo.ChatRoomVO" 		alias="chatRoomVO"/> 
+		<typeAlias type="kr.or.api.vo.ChatUserVO" 		alias="chatUserVO"/> 
+		<typeAlias type="kr.or.api.vo.MemberVO" 		alias="memberVO"/> 
+		<typeAlias type="kr.or.api.vo.PaginationInfoVO" alias="pagingVO"/> 
 
 	 </typeAliases>
 	 

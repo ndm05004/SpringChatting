@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.api.mapper.ChatMapper">
+	
+	<sql id="chatRoomSearch">
+		<if test="searchType != null and searchType == 'title'">
+			and (chat_R_title like '%'||#{searchWord}||'%')
+		</if>
+	</sql>
+	
+	
+	<insert id="insertMessage" parameterType="chatContentVO">
+	insert into chat_content(
+	chat_c_no, chat_r_no, mem_id, chat_date, chat_content
+	) values(
+	    seq_chat_room.nextval, #{chatRNo}, #{memId}, #{chatDate}, #{chatContent}
+	)
+	</insert>
+	
+	<insert id="createChatRoom" parameterType="chatRoomVO">
+	insert into chat_room values(
+	    seq_chat_room.nextval, #{memId}, #{chatRTitle}, 'T'
+	)
+	</insert>
+	
+
+	<select id="selectChatRoomList" parameterType="pagingVO" resultType="chatRoomVO">
+		select b.* 
+		from(
+			select 
+				a.*, row_number() over (order by a.chat_r_no desc) rnum
+			from(
+				select *
+				from CHAT_ROOM	
+				where 1=1
+				<include refid="chatRoomSearch"/>
+				order by chat_r_no desc
+			) a
+		) b 
+		<![CDATA[
+			where b.rnum >= #{startRow} and b.rnum <= #{endRow}			
+		]]>
+			
+	</select>
+
+	<select id="selectChatRoomCount" parameterType="pagingVO" resultType="int">
+		select count(chat_r_no)
+		from CHAT_ROOM
+		where 1=1
+		<include refid="chatRoomSearch"/>
+	</select>
+
+</mapper>
