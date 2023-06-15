@@ -38,9 +38,8 @@ public class ChatServiceImpl implements IChatService {
 
 
 	@Override
-	public void goInChatRoom(int chatRNo) {
-		// TODO Auto-generated method stub
-		
+	public List<ChatContentVO> goInChatRoom(int chatRNo) {
+		return chatMapper.goInChatRoom(chatRNo);
 	}
 	
 	

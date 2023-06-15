@@ -234,8 +234,11 @@
 													<td>${chat.chatRNo }</td>
 													<td>${chat.chatRTitle }</td>
 													<td>${chat.memId }</td>
-													<td><input type="button" value="입장" name="chatBtn"
-														id="${chat.chatRNo }"></td>
+													<td>
+	 												<input type="button" value="입장" name="chatBtn" onclick="openSocket();"
+														id="${chat.chatRNo }" >
+													</td>
+													
 												</tr>
 											</c:forEach>
 										</c:otherwise>
@@ -247,37 +250,25 @@
 								<button type="button" id="newBtn" class="btn btn-primary">방
 									만들기</button>
 							</div>
+        						
+        					
 
-							<div class="chatting-area" id="chatting-area" justify-content: center; align-items: center; height: 100vh;">
+							<div class="chatting-area" id="chatting-area">
 								<div id="exit-area">
-									<button id="exit-btn">나가기</button>
+									<button id="exit-btn" onclick="closeSocket();">나가기</button>
 								</div>
 								
-								<ul class="display-chatting">
-									<!-- <img src=""/> -->
-									<c:forEach items="${list }" var="msg">
-										<fmt:formatDate var="chatDate" value="${msg.createDate }"
-											pattern="yyyy년 MM월 dd일 HH:mm:ss" />
-										<c:if test="${msg.userNo == loginUser.userNo }">
-											<li class="myChat"><span class="chatDate">${chatDate }</span>
-												<p class="chat">${msg.message }</p></li>
-										</c:if>
-										<c:if test="${msg.userNo != loginUser.userNo }">
-											<li><b>${msg.userName }</b>
-												<p class="chat">${msg.message }</p> <span class="chatDate">${chatDate }</span>
-											</li>
-										</c:if>
-									</c:forEach>
+								<ul class="display-chatting" id="messages">
 								</ul>
 
 								<div class="input-area">
-									<textarea id="inputChatting" rows="3"></textarea>
-									<button id="send">보내기</button>
+									<input type="text" id="sender" value="${memberVO.memId}" style="display: none;">
+									<input type="text" id="messageinput">
+									<button id="send" type="button" onclick="send();">보내기</button>
 								</div>
-
-
 							</div>
-
+							
+							
 						</div>
 
 						<div class="card-footer clearfix" id="pagingArea">
@@ -355,14 +346,15 @@
   <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
 </body>
 
-<script type="text/javascript">
+<!-- <script>
+alert("memberVO"+ "${memberVO.memId}")
 $(function(){
 	var newBtn = $("#newBtn");
 	var searchForm = $("#searchForm");
 	var pagingArea = $("#pagingArea");
 		
 	
-	pagingArea.on("click", "a", function(event){
+	pagingArea.on("click","a", function(event){
 		event.preventDefault();
 		var pageNo = $(this).data("page");
 		searchForm.find("#page").val(pageNo);
@@ -374,33 +366,100 @@ $(function(){
 	});
 	
 	
-/* 	$(document).on("click", "input[name='chatBtn']", function(){
-		
-		var chatRNo = $(this).attr('id')
+	$(document).on("click", "input[name='chatBtn']", function() {
+	    var chatRNo = $(this).attr('id');
 
-		if(confirm(chatRNo+ "번 방에 들어가시겠습니까?")){
-			$.ajax({
-				url : "/chat/chatRNo?="+chatRNo,
-				type : 'get',
-				success : function(res){
-					code ="";
-					$.each(res);
-				}
-				
-				
-			$('#chatting-area').html();
-			})
-		}
-		
-		
-	}) */
+	    if (confirm(chatRNo + "번 방에 들어가시겠습니까?")) {
+	        $.ajax({
+	            url: "/chat/chatRNo.do",
+	            type: 'post',
+	            data: {"chatRNo": chatRNo},
+	            dataType : 'json',
+	            contentType: "application/json; charset=utf-8",
+	            success: function(res) {
+	                var code = "";
+	                $('#chatting-area').html(code);
+	            }
+	        });
+	    }
+	});
+});
+</script> -->
 
-})
+    <script type="text/javascript">
+        var ws;
+        var messages = document.getElementById("messages");
+        
+        function openSocket(){
+            if(ws !== undefined && ws.readyState !== WebSocket.CLOSED ){
+                writeResponse("이미 접속중인 방입니다..");
+                console.log("${memberVO.memId}");
+                return;
+            }
+            //웹소켓 객체 만드는 코드
+            ws = new WebSocket("ws://localhost:80/echo");
+            
+            ws.onopen = function(event){
+                if(event.data === undefined){
+              		return;
+                }
+                writeResponse(event.data);
+            };
+            
+            ws.onmessage = function(event){
+                console.log('writeResponse');
+                console.log("${memberVO.memId}");
+                console.log(event.data)
+                writeResponse(event.data);
+            };
+            
+            ws.onclose = function(event){
+                writeResponse("대화 종료");
+            }
+            
+        }
+        
+        function send(){
+        	chatContent = document.getElementById("messageinput").value;
+        	memId = document.getElementById("sender").value;
+            var text = chatContent+","+memId;
+            ws.send(text);
+            
+            console.log(chatContent + " --------- "+ memId)
+            
+            $.ajax({
+            	url:"/chat/insertMessage.do",
+            	type:"POST",
+            	data:{
+            		chatContent: chatContent,
+                    memId: memId
+            	},
+            	datatype: 'json',
+            	success: function(res){
+            		console.log(res);
+            	}
+            })
+            
+            text = "";
+        }
+        
+        
+        
+        
+        function closeSocket(){
+            ws.close();
+        }
+        
+        function writeResponse(text){
+            messages.innerHTML += "<br/>"+text;
+        }
 
-
+        function clearText(){
+            console.log(messages.parentNode);
+            messages.parentNode.removeChild(messages);
+      	}
+        
 </script>
-
-
 
 
 

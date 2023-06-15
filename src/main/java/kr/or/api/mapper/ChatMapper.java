@@ -14,4 +14,6 @@ public interface ChatMapper {
 
 	List<ChatRoomVO> selectChatRoomList(PaginationInfoVO<ChatRoomVO> pagingVO);
 
+	List<ChatContentVO> goInChatRoom(int chatRNo);
+
 }

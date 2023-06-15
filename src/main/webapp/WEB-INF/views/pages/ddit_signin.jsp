@@ -38,9 +38,9 @@
                 </div>
               </div>
               <div class="card-body">
-                <form role="form" id="loginForm" action="/chat/chatList" class="text-start", method="post">
+                <form role="form" id="loginForm" action="/chat/chatList.do" class="text-start", method="post">
                   <div class="input-group input-group-outline my-3">
-                    <input type="email" id="id" name="memId" class="form-control" placeholder="아이디">
+                    <input type="text" id="id" name="memId" class="form-control" placeholder="아이디">
                   </div>
                   <div class="input-group input-group-outline mb-3">
                     <input type="password" id="password" name="memPw" class="form-control" placeholder="비밀번호">

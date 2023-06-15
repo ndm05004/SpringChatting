@@ -12,11 +12,12 @@
 	
 	
 	<insert id="insertMessage" parameterType="chatContentVO">
-	insert into chat_content(
-	chat_c_no, chat_r_no, mem_id, chat_date, chat_content
-	) values(
-	    seq_chat_room.nextval, #{chatRNo}, #{memId}, #{chatDate}, #{chatContent}
-	)
+		insert into chat_content(
+		chat_c_no, mem_id, chat_content, chat_r_no
+		) values(
+		    seq_chat_c_no.nextval, #{memId}, #{chatContent}, 1
+		)
+		
 	</insert>
 	
 	<insert id="createChatRoom" parameterType="chatRoomVO">
@@ -51,5 +52,12 @@
 		where 1=1
 		<include refid="chatRoomSearch"/>
 	</select>
+	
+	<select id="goInChatRoom" parameterType="int" resultType="chatContentVO">
+		select *
+		from chat_content
+		where chat_r_no=#{chatRNo}
+	</select>
+	
 
 </mapper>

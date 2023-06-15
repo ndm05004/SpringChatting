@@ -14,7 +14,7 @@ public interface IChatService {
 
 	List<ChatRoomVO> selectChatRoomList(PaginationInfoVO<ChatRoomVO> pagingVO);
 
-	void goInChatRoom(int chatRNo);
+	List<ChatContentVO> goInChatRoom(int chatRNo);
 
 
 }
